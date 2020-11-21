@@ -9,10 +9,12 @@ class Vertice {
     friend class Aresta;
     friend class Grafo;
 
-    public:
-        Vertice(std::string);
+    //friend operator==(std::string &, Vertice &);
 
-        bool operator==(Vertice *);
+    public:
+        Vertice(std::string &);
+
+        bool operator==(std::string &);
 
 
     private:
@@ -32,26 +34,29 @@ class Aresta {
     public:
         Aresta(Vertice*, Vertice*); //criar c/ verticeIni e verticeFinal
        
-        bool operator==(Aresta *);
+        
 
 
 
 
     private:
-        Vertice *verticeInicio;
+        Vertice *verticeInicial;
         Vertice *verticeFinal;
         int pesoA;
 };
 
 class Grafo {
     public:
+        void gerarGrafo(std::vector<std::string>);
+    
+        Vertice *findVertice(std::string &);
+        Aresta *findAresta(Vertice *, Vertice*);
 
-
-
+        std::vector<std::string> separaPalavras(std::string &);
 
     private:
-        std::vector<Vertice *> vertices;
-        std::vector<Aresta *> arestas;
+        std::vector<Vertice *> grafoVertices;
+        std::vector<Aresta *> grafoArestas;
 
 
 
@@ -63,7 +68,7 @@ class SuperAresta {
 
 
     private:
-        std::vector<Vertice *> verticesSuperA;
+        std::vector<Vertice *> verticesSuperA;  
 
 
 };
