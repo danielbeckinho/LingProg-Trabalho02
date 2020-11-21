@@ -10,6 +10,8 @@ std::string cleanString(std::string);
 
 std::vector<std::string> removeLeadWhitespace(std::vector<std::string>);
 
+std::string sToLower(std::string);
+
 std::vector<std::string> processText();
 
 

@@ -1,5 +1,6 @@
 #include "processadorTexto.h"
 
+#include <algorithm>
 #include <fstream>
 
 static const std::string fileName{"texto.txt"};
@@ -31,6 +32,12 @@ std::string cleanString(std::string string) {
     return string;
 }
 
+std::string sToLower(std::string s){
+    transform(s.begin(), s.end(), s.begin(), ::tolower);
+    return s; 
+    
+}
+
 std::vector<std::string> removeLeadWhitespace(std::vector<std::string> stringV) {
     for (size_t i{0}; i < stringV.size(); i++) {
         size_t start = stringV[i].find_first_not_of(' ');
@@ -58,6 +65,7 @@ std::vector<std::string> processText() {
 
                 if (posNow > posOld) {
                     frase = buffer.substr(posOld, posNow-posOld);
+                    frase = sToLower(frase);
                     frases.push_back(frase);
                     posOld = posNow + 1;
                 }
@@ -65,6 +73,7 @@ std::vector<std::string> processText() {
 
             if (posOld < buffer.length()) {
                 frase = buffer.substr(posOld, std::string::npos);
+                frase = sToLower(frase);
                 frases.push_back(frase);
             }       
  
