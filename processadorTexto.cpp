@@ -5,9 +5,13 @@
 static const std::string fileName{"texto.txt"};
 
 
+size_t minVal(size_t a, size_t b, size_t c) {
+    size_t min = std::min(std::min(a,b),std::min(b,c));
+    return min;
+}
 
 std::string cleanString(std::string string) {
-    std::vector<char> delimiters{'"', '\'', '/', '(', ')', '\\'};
+    std::vector<char> delimiters{'"', '\'', '/', '(', ')', '\\', '\n'};
     for (auto delimiter :delimiters) {
         size_t pos{0};
         pos = string.find(delimiter);
@@ -27,10 +31,19 @@ std::string cleanString(std::string string) {
     return string;
 }
 
+std::vector<std::string> removeLeadWhitespace(std::vector<std::string> stringV) {
+    for (size_t i{0}; i < stringV.size(); i++) {
+        size_t start = stringV[i].find_first_not_of(' ');
+        stringV[i] = stringV[i].substr(start);
+    }
+    return stringV;
+}
 
-std::vector<std::string> funcName() {
+
+std::vector<std::string> processText() {
     std::vector<std::string> frases;
-    
+    std::string frase;
+
     std::ifstream in_file;
     in_file.open(fileName);
 
@@ -40,30 +53,26 @@ std::vector<std::string> funcName() {
         while (getline(in_file, buffer, '.')) { 
             buffer = cleanString(buffer);
             
-            size_t pos_comma{buffer.find(',')};
-            size_t pos_semic{buffer.find(';')};
-            size_t pos_colon{buffer.find(':')};
+            std::size_t posNow, posOld = 0;
+            while ((posNow = buffer.find_first_of(",;:", posOld)) != std::string::npos){
 
-            std::string frase;
-
-            while ((pos_comma != std::string::npos) || (pos_semic != std::string::npos) || (pos_colon != std::string::npos)) {
-                size_t min_pos = std::min(pos_comma , pos_semic , pos_colon);
-
-                frase = buffer.substr(0, min_pos);
-                buffer = buffer.substr(min_pos+1);
-
-                frases.push_back(frase);
-
-                size_t pos_comma{buffer.find(",")};
-                size_t pos_semic{buffer.find(";")};
-                size_t pos_colon{buffer.find(":")};
+                if (posNow > posOld) {
+                    frase = buffer.substr(posOld, posNow-posOld);
+                    frases.push_back(frase);
+                    posOld = posNow + 1;
+                }
             }
+
+            if (posOld < buffer.length()) {
+                frase = buffer.substr(posOld, std::string::npos);
+                frases.push_back(frase);
+            }       
  
         }
 
         in_file.close();
     }
+    frases = removeLeadWhitespace(frases);
     return frases;
 }
-
 

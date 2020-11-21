@@ -4,11 +4,13 @@
 #include <string>
 #include <vector>
 
+size_t minVal(size_t, size_t, size_t);
 
 std::string cleanString(std::string);
 
-std::vector<std::string> funcName();
+std::vector<std::string> removeLeadWhitespace(std::vector<std::string>);
 
+std::vector<std::string> processText();
 
 
 
