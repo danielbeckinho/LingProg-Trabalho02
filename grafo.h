@@ -45,33 +45,6 @@ class Aresta {
         int pesoA;
 };
 
-class Grafo {
-    public:
-        void gerarGrafo(std::vector<std::string>);
-    
-        Vertice *findVertice(std::string &);
-        Aresta *findAresta(Vertice *, Vertice*);
-        SuperAresta *findSuperAresta(std::vector<Vertice *>);
-
-        bool isInVectorVertice(Vertice *, std::vector<Vertice *> &);
-
-        std::vector<std::string> separaPalavras(std::string &);
-
-        void instanciarVertices(std::vector<std::string> &);
-        void instanciarArestas(std::vector<std::string> &);
-        void instanciarSuperArestas(std::vector<std::string> &);
-
-        
-
-    private:
-        std::vector<Vertice *> grafoVertices;
-        std::vector<Aresta *> grafoArestas;
-        std::vector<SuperAresta *> grafoSuperArestas;
-
-
-
-};
-
 class SuperAresta {
     
     friend class Grafo;
@@ -88,13 +61,36 @@ class SuperAresta {
 
 };
 
+class Grafo {
+    public:
+        void gerarGrafo(std::vector<std::string>);
+    
+        Vertice *findVertice(std::string &);
+        Aresta *findAresta(Vertice *, Vertice*);
+        SuperAresta *findSuperAresta(std::vector<Vertice *>);
+
+        bool isInVectorVertice(Vertice *, std::vector<Vertice *> &);
+
+        std::vector<std::string> separaPalavras(std::string &);
+
+        void instanciarVertices(std::vector<std::string> &);
+        void instanciarArestas(std::vector<std::string> &);
+        void instanciarSuperArestas(std::vector<std::string> &);
+        void instanciarSuperArestas_filhas(SuperAresta &);
+
+        void criarVertice_ou_IncrementarPeso(std::string &);
+        void criarAresta_ou_IncrementarPeso(Vertice *, Vertice *);
+        void criarSA_ou_IncrementarPeso(std::vector<Vertice *> &); 
+
+
+    private:
+        std::vector<Vertice *> grafoVertices;
+        std::vector<Aresta *> grafoArestas;
+        std::vector<SuperAresta *> grafoSuperArestas;
 
 
 
-
-
-
-
+};
 
 
 

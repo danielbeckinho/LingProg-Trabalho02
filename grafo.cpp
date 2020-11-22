@@ -1,5 +1,7 @@
 #include "grafo.h"
 
+#include <algorithm>
+
 //bool operator==(std::string &palavra, Vertice &vertice) { }
 
 bool Vertice::operator==(std::string &palavra) {
@@ -109,6 +111,116 @@ std::vector<std::string> Grafo::separaPalavras(std::string &frase){
 }
 
 
+void Grafo::criarVertice_ou_IncrementarPeso(std::string &palavra) {
+    if (findVertice(palavra) == NULL) {grafoVertices.push_back(new Vertice(palavra));}
+    else findVertice(palavra)->pesoV++;
+}
+
+void Grafo::instanciarVertices(std::vector<std::string> &palavras) {
+    for (auto palavra :palavras){ //criar vertices caso necessario, caso nao incrementar pesoV
+        criarVertice_ou_IncrementarPeso(palavra);
+    }    
+}
+
+
+void Grafo::criarAresta_ou_IncrementarPeso(Vertice *verticeInicio, Vertice *verticeFim) {
+    if (findAresta(verticeInicio, verticeFim) == NULL) {grafoArestas.push_back(new Aresta(verticeInicio, verticeFim));}
+    else findAresta(verticeInicio, verticeFim)->pesoA++;   
+}
+
+void Grafo::instanciarArestas(std::vector<std::string> &palavras) {
+    //
+    Vertice *verticePassado;
+    Vertice *verticeAtual;
+    for (size_t i{0}; i < palavras.size(); i++) { //criar arestas caso necessario, caso nao incrementar pesoA
+        std::string palavra = palavras[i];
+
+        if (i == 0) { verticeAtual = findVertice(palavra);}
+
+        else {
+            verticePassado = verticeAtual;
+            verticeAtual = findVertice(palavra);
+
+            criarAresta_ou_IncrementarPeso(verticePassado, verticeAtual);
+        }
+
+    }
+}
+
+void Grafo::criarSA_ou_IncrementarPeso(std::vector<Vertice *> &verticesCandidatos) {
+    SuperAresta *saPtr = findSuperAresta(verticesCandidatos);
+
+    if (saPtr == NULL) { //verifica se SA jah existe, se NULL nao existe entao pode criar
+        saPtr = new SuperAresta(verticesCandidatos); //cria nova SA e adiciona ao grafo
+        grafoSuperArestas.push_back(saPtr);
+    }
+
+    else {saPtr->pesoSA++;} //se SA existe incrementa pesoSA
+    
+}
+
+void Grafo::instanciarSuperArestas_filhas(SuperAresta &saMae) {
+    std::vector<Vertice *> verticesSA_Mae = saMae.verticesSuperAresta;
+
+    //agora vamos criar ou inc peso de novas SA a partir dos vertices da mae
+    //vamos usar vetores de tamanho numVerticesMae-1 a 3 (numero minimo pra aresta ser super, se ela tiver 2 vertices ela eh aresta normal)
+    //respeitando sempre a ordem que as palavras aparecem na frase, que estao implicitas na ordem de formacao do vetorVerticesMae
+    size_t sizeSA_M = verticesSA_Mae.size();
+    size_t sizeSA_f = sizeSA_M - 1;
+
+    std::vector<Vertice *> verticesCandSA_f;
+
+    for (sizeSA_f; sizeSA_f > 2; sizeSA_f--) { //determina tamanho dos vetores de vertices candidatos a serem gerados e testados
+        
+        for (size_t pos_fi{sizeSA_f}; pos_fi <= sizeSA_M; pos_fi++) { //gera vetores de vertices cand
+            size_t pos_in = pos_fi - sizeSA_f; //pos in do vetor de vertices candidatos da filha; pos_fi - pos_in = sizeSA_f, ie, o tamanho do vetor de cand da filha  
+
+            //std::copy(verticesSA_Mae.begin() + pos_in, verticesSA_Mae.begin() + pos_fi, verticesCandSA_f.begin()); //copia do vetor de vertices da mae um subtrecho com tamanho menor que o da mae, repete isso pra todas as possibilidade que respeitem a ordem dos vertices_Mae
+
+            for (size_t k{0}; k < sizeSA_f; k++) {
+                verticesCandSA_f.push_back(verticesSA_Mae[k+pos_in]);
+            }
+
+            criarSA_ou_IncrementarPeso(verticesCandSA_f); //cria ou incrementa SA_filha a partir do subconjunto de vertices da mae
+
+            verticesCandSA_f.clear();
+        }
+    }
+
+
+}
+
+void Grafo::instanciarSuperArestas(std::vector<std::string> &palavras) {
+    std::vector<Vertice *> verticesCandSA;
+    for (size_t i{0}; i < palavras.size(); i++) {
+            
+        Vertice *verticePtr = findVertice(palavras[i]);
+
+        if (verticesCandSA.size() == 0) {verticesCandSA.push_back(verticePtr);}
+
+        else if (isInVectorVertice(verticePtr, verticesCandSA)) { //se vertice isInVectorVertice, eh vertice repetido entao para e cria SA mae. caso cont adiciona ao vector e continua
+                
+            criarSA_ou_IncrementarPeso(verticesCandSA);
+            SuperAresta saMae = *findSuperAresta(verticesCandSA);
+
+            instanciarSuperArestas_filhas(saMae);
+
+            verticesCandSA.clear(); //limpa o vector pra possibilitar criacao de nova SA ainda nessa frase
+        }
+
+        else {
+            verticesCandSA.push_back(verticePtr);
+        }
+
+    }
+
+    criarSA_ou_IncrementarPeso(verticesCandSA); //acabaram as palvras (e potenciais vertices) da frase, tenta criar SA com palavras restantes
+    SuperAresta saMae = *findSuperAresta(verticesCandSA);
+
+    instanciarSuperArestas_filhas(saMae);
+}
+
+
 void Grafo::gerarGrafo(std::vector<std::string> frases) {
     //percorrer frases uma a uma
         //checar palavra por palavra e ver se vertice E e criar ou inc pesoV
@@ -117,61 +229,11 @@ void Grafo::gerarGrafo(std::vector<std::string> frases) {
     for (auto frase : frases) {
         std::vector<std::string> palavras = separaPalavras(frase);
 
-        for (auto palavra :palavras){ //criar vertices caso necessario, caso nao incrementar pesoV
+        instanciarVertices(palavras); //checa se vertice ja existe, se sim incrementa peso, se nao cria
 
-            if (findVertice(palavra) == NULL) {grafoVertices.push_back(new Vertice(palavra));}
-            else findVertice(palavra)->pesoV++;
+        instanciarArestas(palavras); //checa se aresta ja existe, se sim incrementa peso, se nao cria
 
-        }
-
-        Vertice *verticePassado;
-        Vertice *verticeAtual;
-        for (size_t i{0}; i < palavras.size(); i++) { //criar arestas caso necessario, caso nao incrementar pesoA
-            std::string palavra = palavras[i];
-
-            if (i == 0) { verticeAtual = findVertice(palavra);}
-
-            else {
-                verticePassado = verticeAtual;
-                verticeAtual = findVertice(palavra);
-
-                if (findAresta(verticePassado, verticeAtual) == NULL) {grafoArestas.push_back(new Aresta(verticePassado, verticeAtual));}
-                else findAresta(verticePassado, verticeAtual)->pesoA++;
-
-            }
-
-        }
-
-        //criar SuperArestas
-        //cada frase pode originar pelo menos uma SA, que depois pode originar SAs filhas
-        //ATENCAO em uma SA nao pode ter repeticao de vertice. 
-        std::vector<Vertice *> verticesCandSA;
-        for (size_t i{0}; i < palavras.size(); i++) {
-            
-            Vertice *verticePtr = findVertice(palavras[i]);
-
-            if (verticesCandSA.size() == 0) {verticesCandSA.push_back(verticePtr);}
-
-            else if (isInVectorVertice(verticePtr, verticesCandSA)) { //se nenhum vertice repetido adiciona vertice ao vetor, se repetido cria SA mae
-                
-                if (findSuperAresta(verticesCandSA) == NULL) { //verifica se SA jah existe, se NULL nao existe entao pode criar
-                    SuperAresta *sa = new SuperAresta(verticesCandSA); //cria nova SA e adiciona ao grafo
-                    grafoSuperArestas.push_back(sa);
-                }
-                else {findSuperAresta(verticesCandSA)->pesoSA++;} //se SA existe incrementa pesoSA
-                
-                verticesCandSA.clear(); //limpa o vector pra possibilitar criacao de nova SA
-            }
-
-            else {
-                verticesCandSA.push_back(verticePtr);
-            }
-
-        }
-
-        if (findSuperAresta(verticesCandSA) == NULL) {grafoSuperArestas.push_back(new SuperAresta(verticesCandSA));} //acabaram as palvras da frase, tenta criar SA com palavras restantes
-        else findSuperAresta(verticesCandSA)->pesoSA++;
-
+        instanciarSuperArestas(palavras); //checa se SuperAresta existe, se sim incrementa peso dela e filhas, se nao cria SA e a partir dela repete o processo pra criar SA-filhas (SA menores, contidas na SA mae)
 
     }
 }
