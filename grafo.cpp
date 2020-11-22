@@ -6,22 +6,36 @@ bool Vertice::operator==(std::string &palavra) {
     return (this->key == palavra);
 }
 
-Vertice::Vertice(std::string &palavra) {
-    this->key = palavra;
-    this->pesoV = 1;
+bool SuperAresta::operator==(std::vector<Vertice *> &verticesCandSA) { //verticesCandSA leia-se Vertices Candidatos a Super Aresta
+    if (this->verticesSuperAresta.size() != verticesCandSA.size()) {return false;}
+
+    else {
+        for (size_t i{0}; i < this->verticesSuperAresta.size(); i++) {
+            if (this->verticesSuperAresta[i] != verticesCandSA[i]) {return false;}
+        }
+        return true;
+    }
+
 }
 
 
-
-
+Vertice::Vertice(std::string &palavra) {
+    key = palavra;
+    pesoV = 1;
+}
 
 
 Aresta::Aresta(Vertice *verticeIn, Vertice *verticeFi) {
-    this->verticeInicial = verticeIn;
-    this->verticeFinal = verticeFi;
-    this->pesoA = 1;
+    verticeInicial = verticeIn;
+    verticeFinal = verticeFi;
+    pesoA = 1;
 }
 
+
+SuperAresta::SuperAresta(std::vector<Vertice *> verticesSA) {
+    verticesSuperAresta = verticesSA;
+    pesoSA = 1;
+}
 
 
 
@@ -41,6 +55,7 @@ Vertice *Grafo::findVertice(std::string &palavra) {
     return NULL; 
 }
 
+
 Aresta *Grafo::findAresta(Vertice *verticeIn, Vertice *verticeFi) {
     if (grafoArestas.size() == 0) {return NULL;}
 
@@ -52,9 +67,29 @@ Aresta *Grafo::findAresta(Vertice *verticeIn, Vertice *verticeFi) {
 }
 
 
+SuperAresta *Grafo::findSuperAresta(std::vector<Vertice *> verticesFindSA) {
+    if (grafoSuperArestas.size() == 0) {return NULL;}
+
+    else {
+        for (auto SuperA : grafoSuperArestas) {
+            if (*SuperA == verticesFindSA) {return SuperA;}
+        }
+    }
+    return NULL;
+}
 
 
-std::vector<std::string> separaPalavras(std::string &frase){
+bool Grafo::isInVectorVertice(Vertice *verticePtr, std::vector<Vertice *> &verticesCandidatos) {
+    //checa o vetor de vertices candidatos aa formar SuperAresta se palavra, ie, vertice ja esta no vetor
+    for (auto vertice : verticesCandidatos) {
+        if (vertice == verticePtr) {return true;}
+    }
+
+    return false;
+}
+
+
+std::vector<std::string> Grafo::separaPalavras(std::string &frase){
     char delimiter = ' ';
     size_t pos_f{0};
     std::string buffer = frase;
@@ -72,6 +107,7 @@ std::vector<std::string> separaPalavras(std::string &frase){
 
     return palavras;
 }
+
 
 void Grafo::gerarGrafo(std::vector<std::string> frases) {
     //percorrer frases uma a uma
@@ -101,11 +137,42 @@ void Grafo::gerarGrafo(std::vector<std::string> frases) {
 
                 if (findAresta(verticePassado, verticeAtual) == NULL) {grafoArestas.push_back(new Aresta(verticePassado, verticeAtual));}
                 else findAresta(verticePassado, verticeAtual)->pesoA++;
-                
+
             }
 
+        }
+
+        //criar SuperArestas
+        //cada frase pode originar pelo menos uma SA, que depois pode originar SAs filhas
+        //ATENCAO em uma SA nao pode ter repeticao de vertice. 
+        std::vector<Vertice *> verticesCandSA;
+        for (size_t i{0}; i < palavras.size(); i++) {
+            
+            Vertice *verticePtr = findVertice(palavras[i]);
+
+            if (verticesCandSA.size() == 0) {verticesCandSA.push_back(verticePtr);}
+
+            else if (isInVectorVertice(verticePtr, verticesCandSA)) { //se nenhum vertice repetido adiciona vertice ao vetor, se repetido cria SA mae
+                
+                if (findSuperAresta(verticesCandSA) == NULL) { //verifica se SA jah existe, se NULL nao existe entao pode criar
+                    SuperAresta *sa = new SuperAresta(verticesCandSA); //cria nova SA e adiciona ao grafo
+                    grafoSuperArestas.push_back(sa);
+                }
+                else {findSuperAresta(verticesCandSA)->pesoSA++;} //se SA existe incrementa pesoSA
+                
+                verticesCandSA.clear(); //limpa o vector pra possibilitar criacao de nova SA
+            }
+
+            else {
+                verticesCandSA.push_back(verticePtr);
+            }
 
         }
+
+        if (findSuperAresta(verticesCandSA) == NULL) {grafoSuperArestas.push_back(new SuperAresta(verticesCandSA));} //acabaram as palvras da frase, tenta criar SA com palavras restantes
+        else findSuperAresta(verticesCandSA)->pesoSA++;
+
+
     }
 }
 
