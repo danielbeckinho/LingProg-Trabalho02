@@ -3,3 +3,4 @@ mainProgram.o
 mainProgram
 .vscode/launch.json
 .vscode/settings.json
+grafo.o
