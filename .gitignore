@@ -4,3 +4,4 @@ mainProgram
 .vscode/launch.json
 .vscode/settings.json
 grafo.o
+estatisticas.o
