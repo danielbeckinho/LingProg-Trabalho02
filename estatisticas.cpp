@@ -21,8 +21,12 @@ std::vector<Vertice *> Stats::instanciarPalavraMaisFreq(Grafo &grafo) {
 }
 
 std::vector<std::vector<SuperAresta *>> Stats::instanciarSeqPalavrasMaisFreq(Grafo &grafo) {
-    std::vector<std::vector<SuperAresta *>> seqPalavrasPorTamanho; //nesse vetor de vetor o indice principal eh o tamanho das SA que o compoe depois vou iterar sobre ele pra obter os maiores pesos
-    std::vector<std::vector<SuperAresta *>> seqPalavrasPorTamanho_MaiorFreq; //indice prin eh o tamanho da SA, mas agora no vetor de SA soh tem as que tem o peso maior, ie maior freq
+    size_t indexSize{0};
+    for (auto sa : grafo.getGrafoSuperArestas()) { if (sa->getSizeSA() > indexSize) {indexSize = sa->getSizeSA();}}
+    indexSize+=1;
+
+    std::vector<std::vector<SuperAresta *>> seqPalavrasPorTamanho(indexSize, std::vector<SuperAresta *> ()); //nesse vetor de vetor o indice principal eh o tamanho das SA que o compoe depois vou iterar sobre ele pra obter os maiores pesos
+    std::vector<std::vector<SuperAresta *>> seqPalavrasPorTamanho_MaiorFreq(indexSize, std::vector<SuperAresta *> ()); //indice prin eh o tamanho da SA, mas agora no vetor de SA soh tem as que tem o peso maior, ie maior freq
 
     std::vector<SuperAresta *> dummyVec; //vetor dummy pra posicao zero do seqPalavrasPorTamanho
 
@@ -84,12 +88,12 @@ void Stats::getSeqPalavrasMaisFreq() const {
     size_t sizeSeq;
 
     while (validInput == false) {
-        std::cout << "Escolha um tamanho para a sequencia de palavras. O tamanho deve ser 0 < tamanho <= " << maxInput << " e inteiro. \n";
+        std::cout << "Escolha um tamanho para a sequencia de palavras. O tamanho deve ser 2 < tamanho < " << maxInput << " e inteiro. \n";
         std::cout << "Tamanho: ";
 
         std::cin >> sizeSeq;
 
-        if ((sizeSeq > 0) && (sizeSeq <= maxInput)) {validInput = true;}
+        if ((sizeSeq > 0) && (sizeSeq < maxInput)) {validInput = true;}
 
         std::cout << "\n" << std::endl;
 
@@ -108,7 +112,7 @@ void Stats::getSeqPalavrasMaisFreq() const {
         }
     }
 
-    else {
+    else if (superArestasMaisFreq[sizeSeq].size() != 0) {
         std::cout << "As sequencias mais frequentes de palavras, com " << superArestasMaisFreq[sizeSeq][0]->getPesoSA() << " repeticoes sao: \n" << std::endl;
 
         for (auto sa : superArestasMaisFreq[sizeSeq]) {
@@ -121,6 +125,8 @@ void Stats::getSeqPalavrasMaisFreq() const {
 
         }
     }
+
+    else {std::cout << "Nenhuma sequencia para este tamanho." << std::endl;}
 }
 
 

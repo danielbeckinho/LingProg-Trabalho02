@@ -163,14 +163,15 @@ void Grafo::instanciarSuperArestas_filhas(SuperAresta &saMae) {
     std::vector<Vertice *> verticesSA_Mae = saMae.verticesSuperAresta;
 
     //agora vamos criar ou inc peso de novas SA a partir dos vertices da mae
-    //vamos usar vetores de tamanho numVerticesMae-1 a 3 (numero minimo pra aresta ser super, se ela tiver 2 vertices ela eh aresta normal)
+    //vamos usar vetores de tamanho numVerticesMae-1 a 2 (no caso limite todas as aresta sao SA)
     //respeitando sempre a ordem que as palavras aparecem na frase, que estao implicitas na ordem de formacao do vetorVerticesMae
     size_t sizeSA_M = verticesSA_Mae.size();
     size_t sizeSA_f = sizeSA_M - 1;
+    size_t sizeSA_min = 2; //tamanho minimo de SA
 
     std::vector<Vertice *> verticesCandSA_f;
 
-    for (sizeSA_f; sizeSA_f > 2; sizeSA_f--) { //determina tamanho dos vetores de vertices candidatos a serem gerados e testados
+    for (sizeSA_f; sizeSA_f >= sizeSA_min; sizeSA_f--) { //determina tamanho dos vetores de vertices candidatos a serem gerados e testados
         
         for (size_t pos_fi{sizeSA_f}; pos_fi <= sizeSA_M; pos_fi++) { //gera vetores de vertices cand
             size_t pos_in = pos_fi - sizeSA_f; //pos in do vetor de vertices candidatos da filha; pos_fi - pos_in = sizeSA_f, ie, o tamanho do vetor de cand da filha  
