@@ -84,4 +84,3 @@ std::vector<std::string> processText() {
     frases = removeLeadWhitespace(frases);
     return frases;
 }
-

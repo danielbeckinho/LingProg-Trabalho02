@@ -9,8 +9,6 @@ class Vertice {
     friend class Aresta;
     friend class Grafo;
 
-    //friend operator==(std::string &, Vertice &);
-
     public:
         Vertice(std::string &);
 
@@ -23,9 +21,6 @@ class Vertice {
         std::string key;
         int pesoV;
 
-
-
-
 };
 
 
@@ -35,11 +30,6 @@ class Aresta {
 
     public:
         Aresta(Vertice*, Vertice*); //criar c/ verticeIni e verticeFinal
-       
-        
-
-
-
 
     private:
         Vertice *verticeInicial;
@@ -95,8 +85,6 @@ class Grafo {
         std::vector<Vertice *> grafoVertices;
         std::vector<Aresta *> grafoArestas;
         std::vector<SuperAresta *> grafoSuperArestas;
-
-
 
 };
 

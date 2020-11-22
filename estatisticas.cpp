@@ -2,18 +2,18 @@
 
 #include <iostream>
 
-std::vector<Vertice *> Stats::instanciarPalavraMaisFreq(Grafo &grafo) {
+std::vector<Vertice *> Stats::instanciarPalavraMaisFreq(Grafo &grafo) { //usada para inicializar o vetor que contem o ou os vertices (em caso de empate) de maior numero de repeticoes, ie peso, no paragrafo  
     std::vector<Vertice *> palavrasMaisFreq;
     int pesoMax{0};
 
-    for (auto vertice : grafo.getGrafoVertices()) {
+    for (auto vertice : grafo.getGrafoVertices()) { //comparacao vertice a vertice atualizando pesoMax conforme necessario
         if (vertice->getPesoV() > pesoMax) {
             pesoMax = vertice->getPesoV();
-            palavrasMaisFreq.clear();
+            palavrasMaisFreq.clear(); //quando se atualiza o vetor que contem o(s) vertices de maior peso eh limpo
             palavrasMaisFreq.push_back(vertice);
         }
 
-        else if (vertice->getPesoV() == pesoMax) {
+        else if (vertice->getPesoV() == pesoMax) { //em caso de empate usamos este vetor pra armazenar os verices
             palavrasMaisFreq.push_back(vertice);
         }
     }
@@ -32,7 +32,7 @@ std::vector<std::vector<SuperAresta *>> Stats::instanciarSeqPalavrasMaisFreq(Gra
 
     seqPalavrasPorTamanho.push_back(dummyVec);
 
-    for (auto sa : grafo.getGrafoSuperArestas()) {
+    for (auto sa : grafo.getGrafoSuperArestas()) { //processo analago ao feito em instanciarPalavrasMaisFreq (linha 5)
         size_t indice = sa->getSizeSA();
 
         if (seqPalavrasPorTamanho[indice].size() == 0) {
@@ -65,7 +65,7 @@ std::vector<std::vector<SuperAresta *>> Stats::instanciarSeqPalavrasMaisFreq(Gra
     return seqPalavrasPorTamanho_MaiorFreq;
 }
 
-void Stats::getPalavrasMaisFreq() const {
+void Stats::getPalavrasMaisFreq() const { //esta funcao eh soh um exibidor dos resultados previamente calculados
     if (verticesMaisFreq.size() == 1) {
         std::cout << "A palavra mais frequente eh: " << "\"" << verticesMaisFreq[0]->getKey() << "\" "
             << "com " << verticesMaisFreq[0]->getPesoV() << " repeticoes." << std::endl;
@@ -82,7 +82,7 @@ void Stats::getPalavrasMaisFreq() const {
     }
 }
 
-void Stats::getSeqPalavrasMaisFreq() const {
+void Stats::getSeqPalavrasMaisFreq() const { //esta funcao eh soh um exibidor dos resultados previamente calculados
     bool validInput = false;
     size_t maxInput = superArestasMaisFreq.size(); //o indice princ desse vetor eh o tamanho das SA que estao nos subvetores
     size_t sizeSeq;

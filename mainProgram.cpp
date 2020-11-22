@@ -39,4 +39,5 @@ int main() {
 
         else if (sel == 2) {stats.getSeqPalavrasMaisFreq();}
     } 
+    
 }

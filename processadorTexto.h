@@ -15,13 +15,4 @@ std::string sToLower(std::string);
 std::vector<std::string> processText();
 
 
-
-
-
-
-
-
-
-
-
 #endif

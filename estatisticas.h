@@ -23,6 +23,7 @@ class Stats {
     private:
         std::vector<Vertice *> verticesMaisFreq;
         std::vector<std::vector<SuperAresta *>> superArestasMaisFreq;
+        
 };
 
 

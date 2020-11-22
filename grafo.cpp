@@ -8,6 +8,7 @@ bool Vertice::operator==(std::string &palavra) {
     return (this->key == palavra);
 }
 
+
 bool SuperAresta::operator==(std::vector<Vertice *> &verticesCandSA) { //verticesCandSA leia-se Vertices Candidatos a Super Aresta
     if (this->verticesSuperAresta.size() != verticesCandSA.size()) {return false;}
 
@@ -38,10 +39,6 @@ SuperAresta::SuperAresta(std::vector<Vertice *> verticesSA) {
     verticesSuperAresta = verticesSA;
     pesoSA = 1;
 }
-
-
-
-
 
 
 
@@ -91,6 +88,7 @@ bool Grafo::isInVectorVertice(Vertice *verticePtr, std::vector<Vertice *> &verti
 }
 
 
+
 std::vector<std::string> Grafo::separaPalavras(std::string &frase){
     char delimiter = ' ';
     size_t pos_f{0};
@@ -111,6 +109,7 @@ std::vector<std::string> Grafo::separaPalavras(std::string &frase){
 }
 
 
+
 void Grafo::criarVertice_ou_IncrementarPeso(std::string &palavra) {
     if (findVertice(palavra) == NULL) {grafoVertices.push_back(new Vertice(palavra));}
     else findVertice(palavra)->pesoV++;
@@ -121,6 +120,7 @@ void Grafo::instanciarVertices(std::vector<std::string> &palavras) {
         criarVertice_ou_IncrementarPeso(palavra);
     }    
 }
+
 
 
 void Grafo::criarAresta_ou_IncrementarPeso(Vertice *verticeInicio, Vertice *verticeFim) {
@@ -146,6 +146,8 @@ void Grafo::instanciarArestas(std::vector<std::string> &palavras) {
 
     }
 }
+
+
 
 void Grafo::criarSA_ou_IncrementarPeso(std::vector<Vertice *> &verticesCandidatos) {
     SuperAresta *saPtr = findSuperAresta(verticesCandidatos);
@@ -239,20 +241,3 @@ void Grafo::gerarGrafo(std::vector<std::string> frases) {
     }
 }
 
-
-
-
-/*
-
-        char delimiter = ' ';
-        //size_t pos_i{0};
-        size_t pos_f{0};
-        std::string buffer = frase;
-
-        //pos_i = buffer.find_first_not_of(delimiter);
-        pos_f = buffer.find_first_of(delimiter, 0 //pos_i);
-
-        std::string palavra = buffer.substr(0,pos_f);
-        buffer.erase(0, pos_f + 1);
-
-*/ 
