@@ -16,6 +16,8 @@ class Vertice {
 
         bool operator==(std::string &);
 
+        std::string getKey() const {return key;}
+        int getPesoV() const {return pesoV;}
 
     private:
         std::string key;
@@ -54,6 +56,9 @@ class SuperAresta {
 
         bool operator==(std::vector<Vertice *> &); //vai ser usado pra compara uma SA existente com um vector de Vertice* candidato a ser nova SA
 
+        int getPesoSA() const {return pesoSA;}
+        size_t getSizeSA() const {return verticesSuperAresta.size();}
+        std::vector<Vertice *> getVerticesSuperAresta() const {return verticesSuperAresta;}
     private:
         std::vector<Vertice *> verticesSuperAresta;
         int pesoSA;  
@@ -82,6 +87,9 @@ class Grafo {
         void criarAresta_ou_IncrementarPeso(Vertice *, Vertice *);
         void criarSA_ou_IncrementarPeso(std::vector<Vertice *> &); 
 
+        std::vector<Vertice *> getGrafoVertices() const {return grafoVertices;}
+        std::vector<Aresta *> getGrafoArestas() const {return grafoArestas;}
+        std::vector<SuperAresta *> getGrafoSuperArestas() const {return grafoSuperArestas;}        
 
     private:
         std::vector<Vertice *> grafoVertices;

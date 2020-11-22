@@ -1,7 +1,7 @@
 CC = g++
 CPPFLAGS = -Wall -g
 
-OBJECTS = mainProgram.o processadorTexto.o grafo.o
+OBJECTS = mainProgram.o processadorTexto.o grafo.o estatisticas.o
 
 PROGRAM = mainProgram
 
